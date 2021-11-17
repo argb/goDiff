@@ -1,6 +1,11 @@
 This is an implementation of a diff algorithm(authored by EUGENE W. MYERS)
 The paper is here: http://xmailserver.org/diff2.pdf
 
+时间复杂度O(ND), N是两段文本的长度之和m+n，D是SES（最小编辑脚本长度，或者说最小编辑次数更直观）。
+D分量其实之多只是D/2,因为有个优化，论文中也给出了证明。
+但是实际情况中O(ND)只是比较极端的情况，比如我把文本全部删掉，换成全新的，也就是diff两个完全不同的文本。实际上大部分diff只会修改其中很小的
+一部分，可能只有几个"单位"的修改，所以通常情况算法基本上是接近线性时间复杂度的，所以性能很好。
+
 Abstract（摘要）
 The problem of finding a shortest edit script reduces to finding a path from (0,0) to (N,M) with the fewest
 number of horizontal and vertical edges. Let a D-path be a path starting at (0,0) that has exactly D non-diagonal
