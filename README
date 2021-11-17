@@ -1,0 +1,28 @@
+This is an implementation of diff algorithm(authored by EUGENE W. MYERS)
+The paper is here: http://xmailserver.org/diff2.pdf
+
+Abstract（摘要）
+The problem of finding a shortest edit script reduces to finding a path from (0,0) to (N,M) with the fewest
+number of horizontal and vertical edges. Let a D-path be a path starting at (0,0) that has exactly D non-diagonal
+edges.
+
+简单来说就是把寻找"最小编辑脚本"的问题退化(reduces to)成了寻找"A到B的最短路径"问题，这个最短路径就是有着"最少的水平和垂直边"。
+
+As noted in Section 2, the LCS/SES problem can be viewed as an instance of the single-source shortest paths
+problem on a weighted edit graph. This suggests that an efficient algorithm can be obtained by specializing
+Dijkstra’s algorithm [3].
+从论文中这段话可以看出，问题其实转化成了更具体的"单源最短路径问题"，并且提到可以用特化的"地杰斯特拉算法"在加权编辑图上求解。
+
+基本模型就是在一个有向无环图上寻找A->B的最短路径。
+通过贪心模式确定每一步的局部最优解，中间会存在多个可能路径，当最终找到最终解的时候反推回去确定最优路径。
+
+从问题的计算模型的抽象过程基于以下几个原则：
+1、直观，也就是先删除后插入
+2、最少的编辑次数，也就是在二维坐标系中最少的前进步数
+3、单向，也就是只能向前走，不能回退，所以不会出现回路
+路径定义：横轴或者竖轴移动一次算一步
+
+每一步定义为d，每一步会对应k个候选路径，所有候选路径记录到trace中。
+
+该算法还可以计算出longest common sub-string、longest common sub-sequence、shortest edit distance(in myers' paper,
+aka shortest edit script)
