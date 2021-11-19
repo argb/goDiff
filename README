@@ -16,7 +16,7 @@ edges.
 As noted in Section 2, the LCS/SES problem can be viewed as an instance of the single-source shortest paths
 problem on a weighted edit graph. This suggests that an efficient algorithm can be obtained by specializing
 Dijkstra’s algorithm [3].
-从论文中这段话可以看出，问题其实转化成了更具体的"单源最短路径问题"，并且提到可以用特化的"地杰斯特拉算法"在加权编辑图上求解。
+从论文中这段话可以看出，问题其实转化成了更具体的"单源最短路径问题"，并且提到可以用特化的"迪杰斯特拉算法"在加权编辑图上求解。
 
 基本模型就是在一个有向无环图上寻找A->B的最短路径。
 通过贪心策略确定每一步的局部最优解，中间会存在多个可能路径，当最终找到最终解的时候反推回去从多个可能最优解中确定最优路径。
