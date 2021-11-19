@@ -31,3 +31,7 @@ Dijkstra’s algorithm [3].
 
 该算法还可以计算出longest common sub-string、longest common sub-sequence、shortest edit distance(in myers' paper,
 aka shortest edit script)
+
+
+Updates:
+增加了基于lcs的实现，两种算法可以输出完全一样的diff结果
