@@ -32,6 +32,32 @@ Dijkstra’s algorithm [3].
 该算法还可以计算出longest common sub-string、longest common sub-sequence、shortest edit distance(in myers' paper,
 aka shortest edit script)
 
+示例：
+func main() {
+	originStr := "你不是狗"
+	modifiedStr := "你是狗吗"
+
+	originTokens := strings.Split(originStr, "")
+	modifiedTokens := strings.Split(modifiedStr, "")
+
+	myersExample(originTokens, modifiedTokens)
+
+	lcsExample(originTokens, modifiedTokens)
+}
+func myersExample(originTokens, modifiedTokens []string) {
+	fmt.Println("Diff with myers algorithm")
+	myers.Diff(originTokens, modifiedTokens)
+	//myers.ShowLCS(originTokens, modifiedTokens)
+}
+
+func lcsExample(src, target []string) {
+	//lcsArr := lcs.Lsc(src, target)
+	fmt.Println("diff with lcs algorithm")
+	lcs.Diff(src, target)
+	//lcs.Show(lcsArr)
+}
+
+
 
 Updates:
 增加了基于lcs的实现，两种算法可以输出完全一样的diff结果
