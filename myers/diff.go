@@ -1,4 +1,4 @@
-package diff
+package myers
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ var colors = map[Operation]string{
 }
 
 func Diff(src, dst []string) {
-	sec := shortestEditScript(src, dst)
+	sec := ShortestEditScript(src, dst)
 	var result [] string
 	//var op Operation
 	l := len(sec)
@@ -52,7 +52,7 @@ func Diff(src, dst []string) {
 	}
 
 
-	fmt.Println(getReadableScripts(sec))
+	//fmt.Println(GetReadableScripts(sec))
 	fmt.Println(strings.Join(result, "\n"))
 
 	// 清除命令行所控制字符效果
@@ -61,8 +61,10 @@ func Diff(src, dst []string) {
 	fmt.Println("cleaning test")
 }
 
-
-func shortestEditScript(src, dst []string) []Operation {
+/**
+每一步的可行解
+ */
+func getTrace(src, dst []string) []map[int]int {
 	var m = len(src)
 	var n = len(dst)
 
@@ -84,9 +86,12 @@ func shortestEditScript(src, dst []string) []Operation {
 	}
 	v0[0] = i
 	trace = append(trace, v0)
+	if i == m && j == n {
+		return trace
+	}
 
 loop:
-	for d := 1; d < steps; d++ {
+	for d := 1; d <= steps; d++ {
 		lastV := trace[d-1]
 		v := make(map[int]int)
 
@@ -122,14 +127,21 @@ loop:
 			}
 		}
 		trace = append(trace, v)
-
 	}
 	printTrace(trace)
+	return trace
+}
 
+// ShortestEditScript /**
+/**
+最终可行解
+ */
+func ShortestEditScript(src, dst []string) []Operation {
+	trace := getTrace(src, dst)
 	var (
 		prevK int
-		//prevX int
-		//prevY int
+		m = len(src)
+		n = len(dst)
 	)
 	x := m
 	y := n
@@ -199,7 +211,7 @@ func readableOp(op Operation) string {
 	}
 }
 
-func getReadableScripts(ops []Operation) []string {
+func GetReadableScripts(ops []Operation) []string {
 	l := len(ops)
 	scripts := make([]string, l)
 
@@ -208,6 +220,22 @@ func getReadableScripts(ops []Operation) []string {
 	}
 
 	return scripts
+}
+
+func Lcs(src []string, scripts []Operation) []string {
+	var lcs [] string
+	srcIndex := 0
+	for _, script := range scripts { // for range 对类型的处理行为有点怪异，直觉上来说我这里期望的Operation自定义类型，但结果是int
+		script := Operation(script)
+		if script == DEL {
+			srcIndex ++
+		}else if script == MOV { // 因为是公共子序列，所以从任何一个原始序列获取都是一样的
+			lcs = append(lcs, src[srcIndex])
+			srcIndex ++
+		}
+	}
+
+	return lcs
 }
 
 func printTrace(trace []map[int]int) {
@@ -219,5 +247,16 @@ func printTrace(trace []map[int]int) {
 			y := x - k
 			fmt.Printf("  k = %2d: (%d, %d)\n", k, x, y)
 		}
+	}
+}
+
+func ShowLCS(src, target []string) {
+	ses := ShortestEditScript(src, target)
+	//fmt.Println(ses)
+	lcs := Lcs(src, ses)
+	fmt.Println()
+	fmt.Println("A Longest common subsequence:")
+	for _, item := range lcs {
+		fmt.Printf("%s \n", item)
 	}
 }
