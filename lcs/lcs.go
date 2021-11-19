@@ -2,7 +2,29 @@ package lcs
 
 import (
 	"fmt"
+	"strings"
 )
+
+
+type Operation byte
+
+const (
+	DEL Operation= iota + 1
+	ADD
+	MOV
+)
+
+var OpMap = map[Operation]string{
+	DEL: "DEL",
+	ADD: "ADD",
+	MOV: "MOV",
+}
+
+var colors = map[Operation]string{
+	ADD: "\033[32m",
+	DEL: "\033[31m",
+	MOV:   "\033[39m",
+}
 
 func Lsc(src, target []string) []string {
 	m := len(src) // x 轴坐标，列数
@@ -33,6 +55,30 @@ func Lsc(src, target []string) []string {
 		}
 	}
 
+	//visibleDpTable(src, target, matrix)
+
+	i := m
+	j := n
+	for i>=1 && j>=1 {
+		if src[i-1] == target[j-1] {
+			lcs = append(lcs, src[i-1])
+			i --
+			j --
+		}else {
+			if matrix[j-1][i] > matrix[j][i-1] {
+				j --
+			}else {
+				i --
+			}
+		}
+	}
+
+	return reverse(lcs)
+}
+
+func visibleDpTable(src, target []string, matrix [][]int)  {
+	m := len(src)
+	n := len(target)
 	for i:=0; i <= m; i ++ {
 		if i== 0 {
 			fmt.Printf("      ")
@@ -60,24 +106,6 @@ func Lsc(src, target []string) []string {
 		}
 		fmt.Println()
 	}
-
-	i := m
-	j := n
-	for i>=1 && j>=1 {
-		if src[i-1] == target[j-1] {
-			lcs = append(lcs, src[i-1])
-			i --
-			j --
-		}else {
-			if matrix[j-1][i] > matrix[j][i-1] {
-				j --
-			}else {
-				i --
-			}
-		}
-	}
-
-	return reverse(lcs)
 }
 
 func reverse(lcs []string) []string {
@@ -105,19 +133,19 @@ func Show(lcs [] string) {
 	}
 }
 
-func ShortestEditScript(src, target, lcs []string) []string {
-	var scripts []string
+func ShortestEditScript(src, target, lcs []string) []Operation {
+	var scripts []Operation
 	var j int
 	var k int
 	for i :=0; i<len(lcs); i ++ {
 		if lcs[i] == src[j] && lcs[i] == target[k] {
-			scripts = append(scripts, "MOV")
+			scripts = append(scripts, MOV)
 			j++
 			k++
 		}else{
 			for j<len(src) {
 				if lcs[i] != src[j] {
-					scripts = append(scripts, "DEL")
+					scripts = append(scripts, DEL)
 					j ++
 				}else {
 					break
@@ -125,26 +153,82 @@ func ShortestEditScript(src, target, lcs []string) []string {
 			}
 			for k<len(target) {
 				if lcs[i] != target[k] {
-					scripts = append(scripts, "ADD")
+					scripts = append(scripts, ADD)
 					k++
 				}else {
 					break
 				}
 			}
 
-			scripts = append(scripts, "MOV")
+			scripts = append(scripts, MOV)
 			j++
 			k++
 		}
 	}
 	for j < len(src) {
-		scripts = append(scripts, "DEL")
+		scripts = append(scripts, DEL)
 		j++
 	}
 	for k < len(target) {
-		scripts = append(scripts, "ADD")
+		scripts = append(scripts, ADD)
 		k++
 	}
 
 	return scripts
+}
+
+func readableOp(op Operation) string {
+	script, ok := OpMap[op]
+	if ok {
+		return script
+	}else {
+		return "unknown"
+	}
+}
+
+func GetReadableScripts(ops []Operation) []string {
+	l := len(ops)
+	scripts := make([]string, l)
+
+	for i:=0; i< l; i++ {
+		scripts[i] = readableOp(ops[i])
+	}
+
+	return scripts
+}
+
+func Diff(src, dst []string) {
+	lcs := Lsc(src, dst)
+	sec := ShortestEditScript(src, dst, lcs)
+	var result [] string
+	//var op Operation
+	l := len(sec)
+	var j, k int
+	for i:=0; i<l; i++ {
+		op := sec[i]
+		switch op {
+		case MOV:
+			modification := colors[op]+"  " +src[j]
+			result = append(result, modification)
+			j ++
+			k ++
+		case DEL:
+			modification := colors[op]+"- " +src[j]
+			result = append(result, modification)
+			j++
+		case ADD:
+			modification := colors[op]+"+ " + dst[k]
+			result = append(result, modification)
+			k++
+		}
+	}
+
+
+	//fmt.Println(GetReadableScripts(sec))
+	fmt.Println(strings.Join(result, "\n"))
+
+	// 清除命令行所控制字符效果
+	fmt.Println("\033[0m")
+
+	//fmt.Println("cleaning test")
 }

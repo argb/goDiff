@@ -58,7 +58,7 @@ func Diff(src, dst []string) {
 	// 清除命令行所控制字符效果
 	fmt.Println("\033[0m")
 
-	fmt.Println("cleaning test")
+	//fmt.Println("cleaning test")
 }
 
 /**
@@ -128,7 +128,7 @@ loop:
 		}
 		trace = append(trace, v)
 	}
-	printTrace(trace)
+	//printTrace(trace)
 	return trace
 }
 
@@ -180,7 +180,7 @@ func ShortestEditScript(src, dst []string) []Operation {
 		}
 		x, y = lastX, lastY
 	}
-	fmt.Printf("x:%d, y:%d\n", x, y)
+	//fmt.Printf("x:%d, y:%d\n", x, y)
 	// d0, 坐滑梯
 	for x>0 && y>0 {
 		operations = append(operations, MOV)
